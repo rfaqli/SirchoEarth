@@ -1,0 +1,8 @@
+{
+  "name": "Remix SIGIRI",
+  "description": "SirchoEarth - Track Your Stamp, Measure Your Impact | Nuvora Co",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

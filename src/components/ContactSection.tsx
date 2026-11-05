@@ -61,8 +61,8 @@ export function ContactSection() {
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-white/50 font-medium">Email Resmi</p>
-                  <p className="text-sm font-bold text-white">hello@nuvora.co / sircho@nuvora.co</p>
+                  <p className="text-xs text-white/50 font-medium">Email Marketing & B2B</p>
+                  <a href="mailto:b2b@nuvora.co" className="text-sm font-bold text-white hover:text-[#F9D342] transition-colors">b2b@nuvora.co / hello@nuvora.co</a>
                 </div>
               </div>
 
@@ -71,21 +71,44 @@ export function ContactSection() {
                   <MessageCircle className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-white/50 font-medium">WhatsApp Customer Care</p>
-                  <p className="text-sm font-bold text-white">+62 812-3456-7890 (24 Jam)</p>
+                  <p className="text-xs text-white/50 font-medium">WhatsApp Business (Fast Response)</p>
+                  <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-white hover:text-[#25D366] transition-colors">+62 812-3456-7890</a>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 group p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                <div className="w-12 h-12 rounded-xl bg-[#C89B3B]/20 flex items-center justify-center text-[#C89B3B] flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-[#F9D342]/20 flex items-center justify-center text-[#F9D342] flex-shrink-0">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="text-xs text-white/50 font-medium">{lang === 'id' ? 'Sentra Inovasi Nuvora' : 'Nuvora Innovation Hub'}</p>
-                  <p className="text-sm font-bold text-white">Gedung Eco-Lab Nuvora, Surabaya & Jakarta, Indonesia</p>
+                  <p className="text-sm font-bold text-white">Nuvora Eco Hub, Surabaya, Jawa Timur, Indonesia</p>
                 </div>
               </div>
 
+            </div>
+
+            {/* Marketplace Official Stores */}
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <span className="text-[11px] font-bold text-white/70 block mb-2">Toko Resmi Marketplace:</span>
+              <div className="flex gap-2">
+                <a 
+                  href="https://tokopedia.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2 rounded-xl bg-[#42b549]/20 text-[#42b549] border border-[#42b549]/40 font-bold text-xs text-center hover:bg-[#42b549]/30 transition-colors"
+                >
+                  Tokopedia Official
+                </a>
+                <a 
+                  href="https://shopee.co.id" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2 rounded-xl bg-[#ee4d2d]/20 text-[#ee4d2d] border border-[#ee4d2d]/40 font-bold text-xs text-center hover:bg-[#ee4d2d]/30 transition-colors"
+                >
+                  Shopee Mall
+                </a>
+              </div>
             </div>
 
             {/* Quick Partnership Banner */}

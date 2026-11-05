@@ -78,36 +78,36 @@ export function ProfilSection() {
         
         {/* Header */}
         <div className="text-center mb-8 reveal-scale">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold mb-3">
-            <Award className="w-3.5 h-3.5 text-[#C89B3B]" />
-            <span>{lang === 'id' ? 'Paspor Dampak Ekologis • SirchoEarth' : 'Eco-Impact Passport • SirchoEarth'}</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F9D342]/20 border border-[#F9D342]/40 text-[#F9D342] text-xs font-semibold mb-3">
+            <Award className="w-3.5 h-3.5 text-[#F9D342]" />
+            <span>GreenCircle Membership • SirchoEarth</span>
           </div>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-2">
-            {lang === 'id' ? 'Paspor Hijau Anda' : 'Your Eco-Passport'}
+            Paspor Member GreenCircle
           </h2>
           <p className="text-xs sm:text-sm text-white/70 max-w-lg mx-auto">
             {lang === 'id' 
-              ? 'Seluruh riwayat stempel, kontribusi pengurangan plastik, dan poin hadiah tersimpan langsung di perangkat Anda tanpa perlu login.' 
-              : 'All your stamp history, plastic reduction milestones, and reward points stored instantly without needing login.'}
+              ? 'Seluruh riwayat stempel, kontribusi pengurangan plastik, dan kupon diskon 5% tersimpan langsung tanpa perlu login.' 
+              : 'All your stamp history, plastic reduction milestones, and 5% discount vouchers stored instantly without needing login.'}
           </p>
         </div>
 
         {/* Main Passport Card */}
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 relative shadow-2xl border-white/20 mb-8 bg-gradient-to-b from-[#0d2a19]/90 to-[#07170e]/90">
+        <div className="glass-panel rounded-3xl p-6 sm:p-8 relative shadow-2xl border-white/25 mb-8">
           
           <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 mb-8 text-center sm:text-left border-b border-white/10 pb-6">
             <div className="flex flex-col sm:flex-row items-center gap-5">
-              <div className="w-20 h-20 rounded-2xl border-2 border-[#C89B3B] bg-gradient-to-br from-[#103e23] to-[#081a10] shadow-xl flex items-center justify-center flex-shrink-0 text-[#C89B3B]">
-                <Leaf className="w-10 h-10" />
+              <div className="w-20 h-20 rounded-2xl border-2 border-[#F9D342] bg-black/35 shadow-xl flex items-center justify-center flex-shrink-0 p-2 overflow-hidden">
+                <img src="/gambar/logotengah.png" alt="Mascot Sircho Stamp" className="w-full h-full object-contain" />
               </div>
               
               <div>
                 <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
                   <h3 className="font-serif font-bold text-2xl text-white">
-                    {name || 'Sahabat SirchoEarth'}
+                    {name || 'Rifki Fadhila'}
                   </h3>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#C89B3B]/20 text-[#C89B3B] border border-[#C89B3B]/40">
-                    Eco Guardian
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-[#F9D342] text-black uppercase tracking-wider">
+                    Tier: Sprout
                   </span>
                 </div>
                 
@@ -119,12 +119,12 @@ export function ProfilSection() {
                 </p>
 
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                  <span className="text-[11px] px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 font-bold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#C89B3B]" />
-                    {points} Green Points
+                  <span className="text-[11px] px-3 py-1 rounded-full bg-[#F9D342]/20 border border-[#F9D342]/40 text-[#F9D342] font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#F9D342]" />
+                    {points.toLocaleString('id-ID')} Green Points
                   </span>
                   <span className="text-[11px] px-3 py-1 rounded-full bg-white/10 text-white/80">
-                    ID Paspor: <span className="font-mono font-bold text-[#C89B3B]">NVRA-PASS-{points * 7}</span>
+                    ID Paspor: <span className="font-mono font-bold text-[#F9D342]">GC-SURABAYA-{points * 3}</span>
                   </span>
                 </div>
               </div>
@@ -183,10 +183,10 @@ export function ProfilSection() {
                     onChange={e => setTempHousehold(e.target.value)}
                     className="w-full glass-input px-3 py-2 rounded-xl text-xs text-white outline-none focus:border-[#C89B3B] appearance-none"
                   >
-                    <option value="rumah-tangga" className="bg-[#091a10] text-white">Rumah Tinggal (1-4 Orang)</option>
-                    <option value="apartemen" className="bg-[#091a10] text-white">Apartemen / Studio</option>
-                    <option value="kantor-kost" className="bg-[#091a10] text-white">Kantor / Hunian Bersama</option>
-                    <option value="villa-hotel" className="bg-[#091a10] text-white">Villa / Penginapan Ramah Lingkungan</option>
+                    <option value="rumah-tangga" className="bg-neutral-900 text-white">Rumah Tinggal (1-4 Orang)</option>
+                    <option value="apartemen" className="bg-neutral-900 text-white">Apartemen / Studio</option>
+                    <option value="kantor-kost" className="bg-neutral-900 text-white">Kantor / Hunian Bersama</option>
+                    <option value="villa-hotel" className="bg-neutral-900 text-white">Villa / Penginapan Ramah Lingkungan</option>
                   </select>
                 </div>
               </div>
@@ -209,7 +209,7 @@ export function ProfilSection() {
           )}
 
           {savedSuccess && (
-            <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2 mb-6">
+            <div className="p-3 rounded-xl bg-black/40 border border-emerald-400/50 text-emerald-300 text-xs flex items-center gap-2 mb-6">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>Profil Paspor berhasil diperbarui langsung di perangkat Anda!</span>
             </div>
@@ -285,7 +285,7 @@ export function ProfilSection() {
                     <p className="font-bold text-white font-mono">{s.code}</p>
                     <p className="text-[10px] text-white/50">{s.variant} • {s.date}</p>
                   </div>
-                  <span className="font-bold text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">
+                  <span className="font-bold text-[#F9D342] bg-black/40 px-2 py-0.5 rounded border border-[#F9D342]/40">
                     +{s.points} PTS
                   </span>
                 </div>

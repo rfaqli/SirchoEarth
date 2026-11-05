@@ -3,21 +3,51 @@ import { atom } from 'jotai';
 export type Page = 'hero' | 'product' | 'about' | 'contact' | 'pertanian' | 'shop' | 'profil' | 'game';
 
 export const currentPageAtom = atom<Page>('hero');
-export const profileCompletedAtom = atom<boolean>(false);
+export const profileCompletedAtom = atom<boolean>(true);
 export const userAvatarAtom = atom<string>('');
 export const userNameAtom = atom<string>('Rifki Fadhila');
 export const userEducationAtom = atom<string>('sarjana');
-export const userUniversityAtom = atom<string>('Surabaya, Indonesia');
-export const userFieldAtom = atom<string>('sanitasi-berkelanjutan');
-export const userLinkedinAtom = atom<string>('https://linkedin.com/in/rifki-eco');
+export const userUniversityAtom = atom<string>('Surabaya, Jawa Timur');
+export const userFieldAtom = atom<string>('rumah-tangga');
+export const userLinkedinAtom = atom<string>('https://instagram.com/rifki_nuvora');
 
 export const langAtom = atom<'id' | 'en'>(
   (typeof window !== 'undefined' && localStorage.getItem('language_pref') === 'id') ? 'id' : 'en'
 );
 
-// Sircho Stamp Tracking & Gamification Atoms
-export const refillCountAtom = atom<number>(4);
-export const userPointsAtom = atom<number>(200);
+// GreenCircle Membership & Points State (Defaults matching prompt: Tier Sprout, 1,250 Points)
+export const userPointsAtom = atom<number>(1250);
+export const memberTierAtom = atom<string>('Sprout');
+export const refillCountAtom = atom<number>(6);
+
+// Impact Constants
+export const IMPACT_METRICS = {
+  PLASTIC_PER_REFILL_GRAMS: 125, // 6 refills * 125g = 750g as in prompt
+  COIR_BIOMASS_PER_REFILL_GRAMS: 250, // 6 refills * 250g = 1.5 kg
+  BETEL_LEAF_PER_REFILL_GRAMS: 333, // 6 refills * 333g = 2.0 kg
+  CO2_REDUCED_PER_REFILL_KG: 0.25, // 1.5 kg CO2e
+  CFU_PATHOGENS_MILLIONS_PER_REFILL: 4.5,
+  PROTECTION_DAYS_PER_REFILL: 28,
+  POINTS_PER_STAMP: 50
+};
+
+// Monthly Biomassa Data for Animated Charts
+export interface MonthlyImpactData {
+  month: string;
+  coirKg: number;
+  betelKg: number;
+  plasticGrams: number;
+  co2Kg: number;
+}
+
+export const monthlyImpactHistory: MonthlyImpactData[] = [
+  { month: 'Jun', coirKg: 0.8, betelKg: 1.1, plasticGrams: 375, co2Kg: 0.7 },
+  { month: 'Jul', coirKg: 1.0, betelKg: 1.3, plasticGrams: 500, co2Kg: 0.9 },
+  { month: 'Agt', coirKg: 1.2, betelKg: 1.6, plasticGrams: 625, co2Kg: 1.1 },
+  { month: 'Sep', coirKg: 1.3, betelKg: 1.8, plasticGrams: 680, co2Kg: 1.3 },
+  { month: 'Okt', coirKg: 1.4, betelKg: 1.9, plasticGrams: 710, co2Kg: 1.4 },
+  { month: 'Nov', coirKg: 1.5, betelKg: 2.0, plasticGrams: 750, co2Kg: 1.5 },
+];
 
 export interface ScannedStamp {
   id: string;
@@ -25,13 +55,14 @@ export interface ScannedStamp {
   date: string;
   points: number;
   variant: string;
+  location: string;
 }
 
 export const initialScannedStamps: ScannedStamp[] = [
-  { id: 'stamp-1', code: 'SIRCHO-ECO-8821', date: '04 Nov 2026', points: 50, variant: 'Sirih Fresh Classic' },
-  { id: 'stamp-2', code: 'SIRCHO-COIR-4412', date: '28 Okt 2026', points: 50, variant: 'Citrus Coir Fresh' },
-  { id: 'stamp-3', code: 'SIRCHO-LEAF-9930', date: '15 Okt 2026', points: 50, variant: 'Sirih Fresh Classic' },
-  { id: 'stamp-4', code: 'SIRCHO-EUC-1209', date: '01 Okt 2026', points: 50, variant: 'Eucalyptus Herbal' }
+  { id: 'stamp-1', code: 'SIRCHO-ECO-8821', date: '04 Nov 2026', points: 50, variant: 'Sirih Fresh Classic', location: 'Refill Hub Gubeng' },
+  { id: 'stamp-2', code: 'SIRCHO-COIR-4412', date: '28 Okt 2026', points: 50, variant: 'Citrus Coir Fresh', location: 'Bank Sampah Rungkut' },
+  { id: 'stamp-3', code: 'SIRCHO-LEAF-9930', date: '15 Okt 2026', points: 50, variant: 'Sirih Fresh Classic', location: 'Zero Waste Store Surabaya Barat' },
+  { id: 'stamp-4', code: 'SIRCHO-EUC-1209', date: '01 Okt 2026', points: 50, variant: 'Eucalyptus Herbal', location: 'Eco Station Surabaya Pusat' }
 ];
 
 export const scannedStampsAtom = atom<ScannedStamp[]>(initialScannedStamps);
@@ -42,88 +73,212 @@ export interface RedeemedReward {
   code: string;
   date: string;
   pointsCost: number;
-  type: 'voucher' | 'tree' | 'merch';
+  type: 'discount' | 'free_refill' | 'tree' | 'b2b';
 }
 
 export const initialRedeemedRewards: RedeemedReward[] = [
-  { id: 'red-1', title: 'Donasi 1 Bibit Pohon Mangrove Pesisir', code: 'TREE-PLANT-MGR-88', date: '20 Okt 2026', pointsCost: 150, type: 'tree' }
+  { id: 'red-1', title: 'Voucher Diskon 5% GreenCircle', code: 'GC-DISC-5PCT-991', date: '02 Nov 2026', pointsCost: 100, type: 'discount' },
+  { id: 'red-2', title: '1x Free Sircho Refill Cartridge', code: 'FREE-REFILL-SIR-220', date: '22 Okt 2026', pointsCost: 500, type: 'free_refill' }
 ];
 
 export const redeemedRewardsAtom = atom<RedeemedReward[]>(initialRedeemedRewards);
-export const quizScoreAtom = atom<number>(0);
-export const quizCompletedAtom = atom<boolean>(false);
 
-// Constants for impact calculations
-export const IMPACT_METRICS = {
-  // Grams of virgin single-use plastic bottle prevented per refill pack
-  PLASTIC_PER_REFILL_GRAMS: 48,
-  // Grams of coconut coir agricultural biomass utilized per refill pack
-  COIR_BIOMASS_PER_REFILL_GRAMS: 35,
-  // Millions of CFU sanitation pathogens (Salmonella Typhi & E. coli) neutralized
-  CFU_PATHOGENS_MILLIONS_PER_REFILL: 2.5,
-  // Days of active hygienic toilet bowl protection per refill
-  PROTECTION_DAYS_PER_REFILL: 28,
-  // Chemical chlorine runoff avoided (grams)
-  CHLORINE_AVOIDED_GRAMS: 120,
-  // Points earned per stamp scan
-  POINTS_PER_STAMP: 50
-};
-
-// Rewards Store Items
-export const rewardsCatalog = [
+// GreenCircle Loyalty Rewards Catalog (featuring 5% Discount, Free Refill, etc.)
+export const greenCircleRewards = [
   {
-    id: 'rew-voucher-20',
-    titleId: 'Voucher Diskon 20% Refill Pack',
-    titleEn: '20% Off Refill Pack Voucher',
+    id: 'rew-5pct',
+    titleId: 'Voucher Diskon 5% Pembelian Berikutnya',
+    titleEn: '5% Discount Voucher on Next Purchase',
     pointsCost: 100,
-    type: 'voucher' as const,
-    descriptionId: 'Potongan 20% untuk pembelian berikutnya di Nuvora Official Store.',
-    descriptionEn: 'Get 20% discount on your next refill purchase at Nuvora Official Store.',
-    icon: 'Percent'
+    type: 'discount' as const,
+    discountLabel: '5% OFF',
+    descriptionId: 'Potongan langsung 5% untuk semua pemesanan Refill Pack di Nuvora Store.',
+    descriptionEn: 'Direct 5% discount for all Refill Pack purchases at Nuvora Store.'
   },
   {
-    id: 'rew-tree-planting',
-    titleId: 'Donasi 1 Bibit Pohon Pesisir & Sirih Komunitas',
-    titleEn: 'Donate 1 Coastal Tree & Community Betel Sapling',
-    pointsCost: 150,
+    id: 'rew-free-refill',
+    titleId: '1x Free Sircho Refill Cartridge',
+    titleEn: '1x Free Sircho Refill Cartridge',
+    pointsCost: 500,
+    type: 'free_refill' as const,
+    discountLabel: 'FREE ITEM',
+    descriptionId: 'Klaim 1 cartridge refill gratis di titik Refill Station mitra Surabaya terdekat.',
+    descriptionEn: 'Claim 1 free refill cartridge at your nearest partner Refill Station in Surabaya.'
+  },
+  {
+    id: 'rew-tree-donation',
+    titleId: 'Donasi 1 Bibit Pohon Mangrove Pesisir Surabaya',
+    titleEn: 'Donate 1 Coastal Mangrove Tree Sapling',
+    pointsCost: 350,
     type: 'tree' as const,
-    descriptionId: 'Nuvora menanam 1 bibit mangrove di pesisir Jawa Timur atas namamu.',
-    descriptionEn: 'Nuvora plants 1 mangrove sapling on East Java coast under your name.',
-    icon: 'TreePine'
+    discountLabel: 'ECO IMPACT',
+    descriptionId: 'Nuvora menanam 1 bibit mangrove di kawasan pesisir Wonorejo Surabaya.',
+    descriptionEn: 'Nuvora plants 1 mangrove sapling in Wonorejo coastal reserve, Surabaya.'
   },
   {
-    id: 'rew-free-shipping',
-    titleId: 'Gratis Ongkir Ekologis Nuvora',
-    titleEn: 'Eco Free Shipping Voucher',
-    pointsCost: 50,
-    type: 'voucher' as const,
-    descriptionId: 'Bebas biaya pengiriman dengan kurir armada listrik/rendah emisi.',
-    descriptionEn: 'Free delivery with electric vehicle / carbon-offset courier.',
-    icon: 'Truck'
-  },
-  {
-    id: 'rew-brush-coir',
-    titleId: 'Sikat Kloset Serat Sabut Kelapa & Bambu',
-    titleEn: 'Bamboo & Coconut Coir Toilet Brush',
-    pointsCost: 200,
-    type: 'merch' as const,
-    descriptionId: 'Sikat kloset 100% biodegradable anti-gores dan ramah septic tank.',
-    descriptionEn: '100% biodegradable scratch-free toilet brush, safe for septic tanks.',
-    icon: 'Sparkles'
-  },
-  {
-    id: 'rew-sanitation-kit',
-    titleId: 'Donasi Paket Sanitasi Jamban Sehat Warga',
-    titleEn: 'Donate Healthy Latrine Sanitation Kit',
-    pointsCost: 250,
-    type: 'tree' as const,
-    descriptionId: 'Bantuan sanitasi sehat untuk pemukiman rentan penularan tifoid.',
-    descriptionEn: 'Sanitation kit aid for communities vulnerable to typhoid transmission.',
-    icon: 'HeartHandshake'
+    id: 'rew-b2b-sample',
+    titleId: 'Paket Tester B2B Kos & Cafe (Sample Kit)',
+    titleEn: 'B2B Hospitality Tester Kit',
+    pointsCost: 750,
+    type: 'b2b' as const,
+    discountLabel: 'B2B TRIAL',
+    descriptionId: 'Sampel lengkap Sircho Stamp untuk uji coba sanitasi fasilitas komersial Anda.',
+    descriptionEn: 'Comprehensive Sircho Stamp sample pack for testing commercial facility sanitation.'
   }
 ];
 
-// Product Catalog
+// Concept: "Press, Stick, Flush" Steps
+export const howItWorksSteps = [
+  {
+    step: '01',
+    name: 'PRESS',
+    titleId: 'Tekan Aplikator Ergonomis',
+    titleEn: 'Press Ergonomic Applicator',
+    descId: 'Buka tutup pengaman dan tempelkan moncong aplikator stempel ke permukaan keramik kloset yang kering.',
+    descEn: 'Uncap the protective lid and press the ergonomic applicator against the dry ceramic toilet bowl.',
+    icon: 'Fingerprint'
+  },
+  {
+    step: '02',
+    name: 'STICK',
+    titleId: 'Gel Menempel Sempurna',
+    titleEn: 'Bio-Gel Sticks Firmly',
+    descId: 'Dorong tab pendorong stempel 1 klik. Gel matriks biomassa sabut kelapa dan ekstrak sirih langsung merekat kokoh.',
+    descEn: 'Push the dispensing notch 1 click. The coconut coir and betel leaf bio-gel instantly bonds securely.',
+    icon: 'Sparkles'
+  },
+  {
+    step: '03',
+    name: 'FLUSH',
+    titleId: 'Siram & Bersih Alami',
+    titleEn: 'Flush & Natural Clean',
+    descId: 'Setiap aliran siraman air mengaktifkan mikro-busa kavikol antibakteri, mencegah noda kapur dan mensterilkan kloset.',
+    descEn: 'Every flush activates natural antibacterial chavicol micro-foam, preventing limescale and sterilizing pathogens.',
+    icon: 'Droplets'
+  }
+];
+
+// Community & Refill Map Data (Focus: Surabaya & Sekitarnya)
+export interface RefillStation {
+  id: string;
+  name: string;
+  type: 'refill_station' | 'waste_bank' | 'zero_waste_store';
+  district: string;
+  address: string;
+  hours: string;
+  stockStatus: 'Tersedia Banyak' | 'Tersedia Terbatas' | 'Restock Besok';
+  distance: string;
+  phone: string;
+}
+
+export const refillStationsSurabaya: RefillStation[] = [
+  {
+    id: 'st-1',
+    name: 'Refill Hub Gubeng — Nuvora Eco Corner',
+    type: 'refill_station',
+    district: 'Surabaya Pusat / Gubeng',
+    address: 'Jl. Raya Gubeng No. 42, Surabaya',
+    hours: '08:00 - 20:00 WIB',
+    stockStatus: 'Tersedia Banyak',
+    distance: '1.2 km',
+    phone: '+62 812-3344-5566'
+  },
+  {
+    id: 'st-2',
+    name: 'Bank Sampah Induk Surabaya Bersih',
+    type: 'waste_bank',
+    district: 'Surabaya Timur / Rungkut',
+    address: 'Jl. Rungkut Asri Timur No. 18, Surabaya',
+    hours: '08:30 - 16:30 WIB (Tukar Sabut & Poin)',
+    stockStatus: 'Tersedia Banyak',
+    distance: '3.4 km',
+    phone: '+62 813-8899-7711'
+  },
+  {
+    id: 'st-3',
+    name: 'Zero Waste Store Surabaya Barat (Citraland)',
+    type: 'zero_waste_store',
+    district: 'Surabaya Barat / Sambikerep',
+    address: 'Ruko G-Walk Citraland Blok B-12, Surabaya',
+    hours: '09:00 - 21:00 WIB',
+    stockStatus: 'Tersedia Banyak',
+    distance: '5.8 km',
+    phone: '+62 811-2233-4455'
+  },
+  {
+    id: 'st-4',
+    name: 'Komunitas Eco-Sanitasi Wonokromo',
+    type: 'refill_station',
+    district: 'Surabaya Selatan / Wonokromo',
+    address: 'Jl. Diponegoro No. 88, Surabaya',
+    hours: '08:00 - 18:00 WIB',
+    stockStatus: 'Tersedia Terbatas',
+    distance: '2.7 km',
+    phone: '+62 812-9900-1122'
+  },
+  {
+    id: 'st-5',
+    name: 'Bank Sampah Kenjeran Pesisir Asri',
+    type: 'waste_bank',
+    district: 'Surabaya Utara / Kenjeran',
+    address: 'Jl. Pantai Kenjeran No. 105, Surabaya',
+    hours: '09:00 - 17:00 WIB',
+    stockStatus: 'Tersedia Banyak',
+    distance: '6.1 km',
+    phone: '+62 813-4455-6677'
+  }
+];
+
+// Community Live Feed Posts
+export interface CommunityPost {
+  id: string;
+  author: string;
+  role: string;
+  avatar: string;
+  time: string;
+  text: string;
+  tags: string[];
+  likes: number;
+  refillCount: number;
+}
+
+export const communityFeedPosts: CommunityPost[] = [
+  {
+    id: 'post-1',
+    author: 'Dinda Ayuningtyas',
+    role: 'Pengelola Kos Mahasiswi Rungkut',
+    avatar: '👩🏻‍💼',
+    time: '2 jam yang lalu',
+    text: 'Baru refill 3 packs, stamp kelima! Kloset 12 kamar kos jadi bebas bau apek dan ga ada kerak air lagi tanpa bikin pusing aroma klorin tajam. Anak-anak kos pada suka aromanya!',
+    tags: ['#NuvoraEcoHero', '#SirchoStamp', '#KosSehatSurabaya'],
+    likes: 42,
+    refillCount: 5
+  },
+  {
+    id: 'post-2',
+    author: 'Kevin Setiawan',
+    role: 'Cafe Owner — Spazio Surabaya',
+    avatar: '👨🏻‍💻',
+    time: '5 jam yang lalu',
+    text: 'Toilet kafe kami sekarang 100% pakai Sircho Stamp. Customer banyak yang notice toiletnya estetik & wangi herbal segar. Plus poin GreenCircle-nya udah kekumpul banyak buat donasi mangrove!',
+    tags: ['#SirchoStamp', '#GreenBusiness', '#ZeroWasteCafe'],
+    likes: 38,
+    refillCount: 8
+  },
+  {
+    id: 'post-3',
+    author: 'Ibu Ratna Wardani',
+    role: 'Aktivis Bank Sampah Rungkut',
+    avatar: '🧕🏼',
+    time: '1 hari yang lalu',
+    text: 'Hari ini berhasil kumpulkan 25kg sabut kelapa dari warga untuk disetor ke Nuvora Co. Senang sekali limbah sabut sekarang diserap jadi produk bernilai tinggi. Keren Sircho!',
+    tags: ['#CircularEconomy', '#BankSampahSurabaya', '#NuvoraCo'],
+    likes: 67,
+    refillCount: 4
+  }
+];
+
+// Products Catalog
 export const sirchoProducts = [
   {
     id: 'prod-starter-kit',
@@ -132,23 +287,23 @@ export const sirchoProducts = [
     subtitleEn: 'Ergonomic Applicator + 2 Gel Refill Packs',
     price: 49000,
     originalPrice: 65000,
-    badgeId: 'Paling Populer',
-    badgeEn: 'Best Seller',
+    badgeId: 'Starter Pack',
+    badgeEn: 'Starter Pack',
     rating: 4.9,
     reviews: 1420,
     featuresId: [
       '12 Stamp gel bio-sirih higienis',
+      'Konsep "Press, Stick, Flush" mudah dipakai',
       'Mencegah kerak & biofilm Salmonella Typhi',
-      'Aroma herbal segar daun sirih alami',
       'Aplikator dapat diisi ulang selamanya'
     ],
     featuresEn: [
       '12 bio-betel hygienic stamp gels',
+      'Easy "Press, Stick, Flush" concept',
       'Prevents scale & Salmonella Typhi biofilm',
-      'Fresh natural herbal betel fragrance',
       'Reusable forever applicator'
     ],
-    img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&h=450&fit=crop'
+    img: '/gambar/kemasanproduk.png'
   },
   {
     id: 'prod-refill-duo',
@@ -157,161 +312,91 @@ export const sirchoProducts = [
     subtitleEn: '2 Coconut Coir & Betel Leaf Cartridge Refills',
     price: 36000,
     originalPrice: 45000,
-    badgeId: 'Hemat Plastik',
-    badgeEn: 'Plastic Saver',
+    badgeId: 'Paling Hemat',
+    badgeEn: 'Best Seller Refill',
     rating: 4.8,
     reviews: 980,
     featuresId: [
-      'Setara 2 botol pembersih konvensional (96g plastik dicegah)',
+      'Setara 2 botol pembersih konvensional (250g plastik dicegah)',
       'Aman untuk bakteri pengurai septic tank',
       'Bahan abrasif mikro sabut kelapa lembut',
       'Cukup untuk pemakaian 2 bulan rumah tangga'
     ],
     featuresEn: [
-      'Replaces 2 conventional cleaner bottles (96g plastic saved)',
+      'Replaces 2 conventional cleaner bottles (250g plastic saved)',
       'Safe for septic tank microbiome',
       'Gentle coconut coir micro-abrasive',
       'Lasts 2 months for average household'
     ],
-    img: 'https://images.unsplash.com/photo-1585421514738-01798e348b17?w=600&h=450&fit=crop'
+    img: '/gambar/kemasanproduk.png'
   },
   {
     id: 'prod-family-bulk',
-    name: 'Sircho Eco Family 4-Pack Bundle',
-    subtitleId: 'Paket Refill Komplit 4 Cartridge + Bonus Coir Sponge',
+    name: 'Sircho Eco Family & B2B 4-Pack Bundle',
+    subtitleId: 'Paket 4 Cartridge + Bonus Coir Sponge & 200 PTS',
     subtitleEn: 'Complete 4-Cartridge Refill + Bonus Coir Sponge',
     price: 68000,
     originalPrice: 90000,
-    badgeId: 'Best Value',
+    badgeId: 'B2B & Family Choice',
     badgeEn: 'Best Value',
     rating: 5.0,
     reviews: 2150,
     featuresId: [
-      'Mencegah 192g limbah botol plastik sekali pakai',
-      'Mendukung petani sabut kelapa lokal',
+      'Mencegah 500g limbah botol plastik sekali pakai',
+      'Mendukung petani sabut kelapa & bank sampah lokal',
       'Bonus 1x Spons Kloset Sabut Kelapa Nuvora',
-      'Gratis 200 Green Points langsung'
+      'Bonus langsung 200 GreenCircle Points'
     ],
     featuresEn: [
-      'Prevents 192g single-use plastic bottle waste',
+      'Prevents 500g single-use plastic bottle waste',
       'Supports local coconut coir farming partners',
       'Bonus 1x Nuvora Coconut Coir Toilet Sponge',
       'Instant 200 Green Points included'
     ],
-    img: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=600&h=450&fit=crop'
+    img: '/gambar/kemasanproduk.png'
   }
 ];
 
-// Edu-Hub Content
-export const eduArticles = [
+// B2B Partnership Packages (Kos, Hotel, Cafe, Restoran)
+export const b2bPackages = [
   {
-    id: 'edu-typhoid',
-    tag: 'Sanitasi Kesehatan',
-    titleId: 'Bahaya Laten Demam Tifoid: Mengapa Sanitasi Toilet Adalah Garis Pertahanan Utama',
-    titleEn: 'The Silent Risk of Typhoid Fever: Why Toilet Sanitation is First Line of Defense',
-    excerptId: 'Salmonella Typhi ditularkan melalui rute fekal-oral yang sering bersumber dari aerosol siraman toilet dan biofilm kloset yang tidak steril.',
-    excerptEn: 'Salmonella Typhi transmits via fecal-oral routes frequently originating from toilet flush aerosols and unsterile bowl biofilms.',
-    contentId: `Demam tifoid (tifus) merupakan infeksi bakteri akut yang disebabkan oleh Salmonella enterica serovar Typhi. Menurut data kesehatan global dan Kemenkes RI, sanitasi buruk dan toilet yang tidak terawat menjadi jalur penyebaran mikroba patogen terbesar. 
-
-Saat kloset disiram tanpa desinfeksi kontinyu, terjadi efek aerosol mikro yang menerbangkan bakteri patogen hingga radius 1.5 meter ke udara dan hinggap di gagang pintu, dinding, maupun sikat gigi di kamar mandi. 
-
-Sircho Stamp oleh Nuvora Co bekerja dengan melepaskan mikro-film antibakteri setiap kali tombol flush ditekan. Lapisan hidrofilik alami dari ekstrak daun sirih melapisi permukaan keramik, menghentikan adhesi koloni bakteri sebelum sempat berkembang biak, serta mensterilkan air genangan kloset secara aman tanpa uap klorin berbahaya.`,
-    contentEn: `Typhoid fever is an acute systemic infection caused by Salmonella enterica serovar Typhi. Poor toilet sanitation and biofilmed fixtures serve as the leading vector for waterborne and fecal-oral contagion.
-
-When an untreated toilet is flushed, turbulent water releases micro-aerosol plumes carrying viable pathogens up to 1.5 meters into ambient air, contaminating nearby surfaces and toiletries.
-
-Sircho Stamp by Nuvora Co releases an active antibacterial hydrophilic film across the bowl with every flush. The natural betel leaf phenolics neutralize bacterial adhesion sites, keeping the standing water sterile without emitting toxic chlorine vapors.`,
-    readTime: '4 menit baca',
-    sdgTag: 'SDG 3 & 6',
-    icon: 'ShieldAlert'
-  },
-  {
-    id: 'edu-betel',
-    tag: 'Fitokimia Alam',
-    titleId: 'Kekuatan Antimikroba Daun Sirih (Piper betle L.): Alternatif Alami Pengganti Klorin',
-    titleEn: 'Antimicrobial Power of Betel Leaf (Piper betle L.): Natural Alternative to Harsh Chlorine',
-    excerptId: 'Kaya akan kavikol, kavibetol, dan eugenol yang merusak dinding sel bakteri patogen tanpa membunuh bakteri anaerobik pengurai septik tank.',
-    excerptEn: 'Rich in chavicol, chavibetol, and eugenol which disrupt bacterial cell walls without destroying beneficial septic tank microflora.',
-    contentId: `Pembersih toilet konvensional sering menggunakan asam klorida (HCl) pekat atau natrium hipoklorit (bleach). Selain merusak enamel kloset dan menghasilkan uap klorin yang mengiritasi saluran pernapasan, bahan kimia ini membunuh bakteri pengurai di dalam tangki septik (septic tank), mengakibatkan septic tank cepat penuh dan mencemari air tanah pemukiman.
-
-Ekstrak Daun Sirih (Piper betle L.) yang diformulasikan dalam Sircho Stamp mengandung senyawa aktif fenolik golongan kavikol dan hidroksikavikol. Penelitian mikrobiologi membuktikan daya hambatnya terhadap bakteri gram negatif (seperti Salmonella Typhi dan E. coli) hingga 99.8%. 
-
-Hebatnya, saat dibilas ke dalam tangki septik, konsentrasi alaminya terurai secara hayati (biodegradable) dalam 48 jam, menjaga keseimbangan mikrobioma tanah dan air limbah domestik tetap lestari.`,
-    contentEn: `Conventional chemical cleaners rely heavily on hydrochloric acid and sodium hypochlorite bleach. Beyond corroding enamel and releasing corrosive fumes, they wipe out the beneficial anaerobic microbiome in septic tanks, triggering rapid tank overflows and contaminating groundwater.
-
-Piper betle L. extract formulated into Sircho Stamp features chavicol and hydroxychavicol phenolics proven to deliver up to 99.8% inhibition of Salmonella Typhi and E. coli.
-
-Crucially, upon entering drainage, the organic actives biodegrade completely within 48 hours, safeguarding soil microbiota and downstream domestic waterways.`,
-    readTime: '3 menit baca',
-    sdgTag: 'SDG 6 & 12',
-    icon: 'Leaf'
-  },
-  {
-    id: 'edu-coir',
-    tag: 'Sirkular Biomassa',
-    titleId: 'Sabut Kelapa: Mengubah Limbah Perkebunan Menjadi Agen Pembersih Abrasif Lembut',
-    titleEn: 'Coconut Coir: Transforming Plantation Waste into Gentle Abrasive Cleaning Agent',
-    excerptId: 'Pemanfaatan serat biomassa kelapa lokal mencegah pembakaran limbah pertanian dan menyediakan tekstur scouring alami bebas mikroplastik.',
-    excerptEn: 'Utilizing local coconut fiber biomass prevents agricultural burning and provides microplastic-free natural scouring texture.',
-    contentId: `Indonesia merupakan salah satu produsen kelapa terbesar di dunia, namun jutaan ton sabut kelapa (coconut coir) sering dibuang begitu saja atau dibakar di ladang, memicu emisi karbon dan polusi udara partikulat.
-
-Nuvora Co mengolah limbah sabut kelapa menjadi bubuk selulosa mikro-serat yang diintegrasikan ke dalam matriks gel Sircho Stamp. Butiran halus biomassa ini bekerja sebagai agen abrasif mekanis ramah lingkungan yang mampu mengangkat kerak air dan noda kalsium tanpa menggores porselen kloset.
-
-Inisiatif sirkular ini memberdayakan kelompok tani kelapa lokal di Jawa dan Sumatra, sekaligus menghentikan penggunaan manik-manik mikroplastik sintetis yang selama ini mencemari ekosistem laut.`,
-    contentEn: `Indonesia is a global coconut leader, yet vast quantities of fibrous coconut coir agricultural residue are routinely dumped or open-burned, contributing to carbon emissions and smog.
-
-Nuvora Co converts agricultural coir waste into fine micro-cellulose scrubbers suspended within the Sircho Stamp matrix. These organic micro-particles provide gentle, scratch-free mechanical stain removal without synthetic plastic microbeads.
-
-This circular value chain directly empowers local coconut farming communities across Java and Sumatra while preventing marine microplastic pollution.`,
-    readTime: '3 menit baca',
-    sdgTag: 'SDG 8 & 12',
-    icon: 'Recycle'
-  }
-];
-
-// Interactive Quiz Questions
-export const sanitationQuiz = [
-  {
-    id: 1,
-    questionId: 'Bakteri penyebab utama penyakit demam tifoid yang kerap tersebar melalui sanitasi buruk adalah...',
-    questionEn: 'The primary bacteria causing typhoid fever frequently transmitted via poor sanitation is...',
-    options: [
-      'Salmonella Typhi',
-      'Lactobacillus bulgaricus',
-      'Saccharomyces cerevisiae',
-      'Spirulina platensis'
+    id: 'b2b-kos',
+    title: 'Paket Pengelola Kos & Hunian Mahasiswa',
+    rooms: '10 - 30 Kamar',
+    priceEstimate: 'Mulai Rp 180.000 / bln',
+    benefits: [
+      'Penghematan biaya sanitasi bulanan hingga 35%',
+      'Bebas aroma klorin tajam yang memicu batuk penghuni',
+      'Sertifikat Kos Ramah Lingkungan (Green Dorm Verified)',
+      'Pengantaran refill otomatis berkala ke lokasi'
     ],
-    correctIndex: 0,
-    explanationId: 'Tepat! Salmonella Typhi adalah bakteri patogen yang menginfeksi saluran pencernaan manusia melalui transmisi fekal-oral dari sanitasi toilet yang tidak higienis.',
-    explanationEn: 'Correct! Salmonella Typhi is the pathogen infecting the digestive tract via fecal-oral transmission from unhygienic toilets.'
+    highlight: 'Favorit 85+ Kos Surabaya'
   },
   {
-    id: 2,
-    questionId: 'Mengapa pembersih berbahan klorin pekat dan asam keras buruk untuk tangki septik (septic tank)?',
-    questionEn: 'Why are harsh chlorine bleach and strong acids harmful to septic tanks?',
-    options: [
-      'Membuat air kloset menjadi terlalu wangi',
-      'Membunuh bakteri baik pengurai feses di dalam septic tank sehingga cepat mampet dan meluap',
-      'Membuat warna porselen kloset menjadi emas berkilau',
-      'Mempercepat pertumbuhan sabut kelapa alami'
+    id: 'b2b-cafe',
+    title: 'Paket Kafe & Restoran Higienis',
+    rooms: '1 - 5 Restroom Pelanggan',
+    priceEstimate: 'Mulai Rp 95.000 / bln',
+    benefits: [
+      'Toilet wangi herbal segar & bersih mengesankan tamu',
+      'Stiker akrilik "Cleaned with Natural Sircho Stamp"',
+      'Mencegah kerak kalsium air sumur & pipa mampet',
+      'Dukungan promosi bersama di Community Feed'
     ],
-    correctIndex: 1,
-    explanationId: 'Klorin dan asam kuat mematikan mikroba anaerob pengurai limbah, sehingga feses tidak terurai dan tangki septik cepat penuh serta mencemari air tanah.',
-    explanationEn: 'Chlorine and strong acids destroy anaerobic digestion microbes, halting waste breakdown, causing septic overflow and groundwater contamination.'
+    highlight: 'Dipercaya Kafe Kekinian'
   },
   {
-    id: 3,
-    questionId: 'Senyawa aktif utama dalam daun sirih (Piper betle L.) yang berfungsi sebagai agen antibakteri alami adalah...',
-    questionEn: 'The primary active phytochemical compound in betel leaf functioning as natural antibacterial is...',
-    options: [
-      'Kavikol (Chavicol) & Hidroksikavikol',
-      'Monosodium Glutamat (MSG)',
-      'Polietilena Tereftalat (PET)',
-      'Asam Sulfat Anorganik'
+    id: 'b2b-hotel',
+    title: 'Paket Hotel & Villa Eco-Resort',
+    rooms: '30+ Kamar / Unit',
+    priceEstimate: 'Kustomisasi Kontrak B2B',
+    benefits: [
+      'Dokumentasi audit ESG & reduksi jejak karbon resmi',
+      'Aplikator kustom berlogo hotel (Co-Branded)',
+      '100% aman untuk pengolahan limbah STP & septic tank hotel',
+      'Dedicated Account Manager Nuvora Co'
     ],
-    correctIndex: 0,
-    explanationId: 'Kavikol dan hidroksikavikol adalah fenol alami daun sirih dengan daya antibakteri 5x lebih kuat daripada fenol standar namun ramah lingkungan.',
-    explanationEn: 'Chavicol and hydroxychavicol are natural betel leaf phenols with 5x stronger antibacterial potency than standard phenol, yet biodegradable.'
+    highlight: 'Kemitraan Hotel Berkelanjutan'
   }
 ];
 
@@ -320,33 +405,21 @@ export const sdgData = [
   {
     number: '3',
     title: 'Good Health & Well-being',
-    titleId: 'Kehidupan Sehat dan Sejahtera',
-    descId: 'Memutus rantai transmisi bakteri patogen seperti Salmonella Typhi melalui sanitasi toilet higienis tanpa gas beracun.',
-    descEn: 'Breaking pathogen transmission chains like Salmonella Typhi via hygienic toilets without toxic chemical fumes.',
-    color: '#4C9F38'
+    desc: 'Memutus transmisi patogen fekal-oral (Salmonella Typhi) dengan kavikol alami daun sirih.'
   },
   {
     number: '6',
     title: 'Clean Water & Sanitation',
-    titleId: 'Air Bersih dan Sanitasi Layak',
-    descId: 'Formula biodegradable bebas klorin yang menjaga mikroba pengurai tangki septik dan mencegah rembesan polutan ke air tanah.',
-    descEn: 'Chlorine-free biodegradable formula protecting septic biome and preventing toxic pollutant seepage into groundwater.',
-    color: '#26BDE2'
+    desc: 'Bebas klorin dan asam pekat, melindungi mikroba septic tank dan air tanah dari kontaminasi.'
   },
   {
     number: '8',
     title: 'Decent Work & Economic Growth',
-    titleId: 'Pekerjaan Layak & Pertumbuhan Ekonomi',
-    descId: 'Pemberdayaan petani kelapa dan pekebun sirih lokal dengan menyerap limbah biomassa sabut kelapa bernilai tambah.',
-    descEn: 'Empowering local coconut and betel farmers by upcycling agricultural coir biomass into high-value green products.',
-    color: '#A21942'
+    desc: 'Memberdayakan petani kelapa & bank sampah lokal melalui penyerapan limbah biomassa bernilai tambah.'
   },
   {
     number: '12',
     title: 'Responsible Consumption & Production',
-    titleId: 'Konsumsi dan Produksi Bertanggung Jawab',
-    descId: 'Sistem cartridge refill yang mengeliminasi botol plastik tebal sekali pakai, mewujudkan ekonomi sirkular zero-waste.',
-    descEn: 'Refill cartridge ecosystem eliminating thick single-use virgin plastic bottles, achieving circular zero-waste economy.',
-    color: '#BF8B2E'
+    desc: 'Sistem cartridge isi ulang yang mengeliminasi botol plastik sekali pakai dan mempromosikan sirkularitas.'
   }
 ];
